@@ -1,10 +1,12 @@
-This python script is a unpacker/packer for assets file in Pandora's box DX game boards.
-Pandora's box DX game boards is great product for arcade game player. It preinstalled 3000 games.
-And it run a retroarch and several game cores to emulate all 3000 games, and its assets is encrypted. 
-Users can not mod UI, logo files are stored in NAND IC onboard, so it's hard to change logo files.
-There are 3 files with .zip extension in the roms folder of TF card,  they are had.zip hadc.zip and rade.zip.
+This python script is an unpacker/packer for the assets file of the Pandora's Box DX game boards.
+Pandora's box DX is a great product to play arcade games. It comes with 3000 games preinstalled.
+
+Inside, it runs retroarch and several game cores to emulate all 3000 games, and its assets are encrypted. 
+Users can not modify the UI and the logo files are stored in NAND IC onboard, so it's hard to change any files.
+There are 3 files with .zip extension in the roms folder of the TF card, called had.zip hadc.zip and rade.zip.
+
 These files are not game roms, they are actually packaged asset files.
-You can use this script to unpack/pack these 3 files 
+You can use this script to unpack/repack these 3 files 
 
 Usage: 
    * unpack 
@@ -22,8 +24,8 @@ Usage:
 ```
 
 note:
-    1. Asset package file only store crc32 code of every file, and the file name information is lost, so I use file names, this file lists all filename I known.
-    2. Main program extrace asset package file into /tmp/, if there is file nameed retroarch in /tmp/, main program will run /tmp/retroarch instead of retroarch in NAND when users start a game, ( not all games are run with retroarch, but the first game KOF97 is ), so you can add your own retroarch into asset package file.  but i found this method is not alwayws work , maybe stock firmware updated. 
+    1. The asset package file only stores crc32 hashes of every file and the file name information is lost, so I use file the `names`. This file lists all filename I know so far.
+    2. Main program extracts the asset package file into /tmp/. If there is file nameed retroarch in /tmp/, the main program will run /tmp/retroarch instead of retroarch in NAND when users start a game. (Not all games are run with retroarch, but the first game KOF97 is), so you can add your own retroarch into asset package file, but I found this method does not always work, maybe due to updated firmware. 
     3. You'd better use Python3
 
 
