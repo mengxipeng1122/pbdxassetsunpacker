@@ -2,13 +2,99 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from mxp.utils import *
+import math
+import subprocess
+import codecs
+import os
+import json
+import struct
+#from mxp.utils import *
 from unicorn import *
 from unicorn.arm_const import *
-sys.path.append("./qiling")
+#sys.path.append("./qiling")
 from qiling import *
 
 from Crypto.Cipher import AES
+
+def getAlignAddr(o, align=4):
+  '''
+This function get a aligned address 
+  '''
+  o = int(math.ceil(o*1./align)*align)
+  return o
+
+def createDirIfNeed(d):
+    if not os.path.isdir(d):
+        os.makedirs(d)
+
+def runCmd(cmd, showCmd =True, mustOk=False, showResult=False):
+  '''
+run a shell command  on PC
+and return the output result
+parameter:
+  cmd --- the command line
+  showCmd -- whether show running command
+  mustOk -- if this option is True and command run failed, then raise a exception
+  showResult -- show result of command
+  '''
+  if showCmd:
+    print (cmd)
+  ## run it ''
+  result = ""
+  p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+  ## But do not wait till netstat finish, start displaying output immediately ##
+  while True:
+    try:
+        output = p.stdout.readline().decode()
+    except UnicodeDecodeError as e:
+        print(' UnicodeDecodeError ', e);
+    if output == '' and p.poll() is not None:
+      break
+    if output:
+      result+=str(output)
+      if showResult:
+        print(output.strip())
+        sys.stdout.flush()
+  stderr = p.communicate()[1]
+  if stderr:
+    print (f'STDERR:{stderr}')
+  p_status = p.wait()
+  if mustOk:
+    if p_status is p_status !=0: raise Exception('run %s failed %d' %(cmd, p_status))
+  return result
+
+
+def fileExist(fn, mindat=10):
+  '''
+Check file is exist 
+Parameters: 
+  fn -- file name 
+  mindat -- the file contents should not less than this size 
+  ''' 
+  return os.access(fn, os.R_OK) and len(open(fn,'rb').read(mindat))==mindat;
+
+
+def saveJson2File(info, fn, backup=True):
+  '''
+Save a json file
+Parameter:
+  info -- json info variable 
+  fn -- json file name
+  backup -- whether backup older json file before write
+  '''
+  if backup and fileExist(fn): 
+    runCmd('cp %s %s.bak' %( fn, fn))
+  json.dump(info, codecs.open(fn, "w",encoding='utf-8', errors='ignore'), indent=2,  sort_keys=True);
+  
+
+
+def createDirForFn(fn):
+  '''
+Create a directory for a file if needs
+  '''
+  dd = os.path.dirname(fn)
+  if not os.access(dd, os.R_OK): os.makedirs(dd)
+
 
 key = b"\x04\xCD\x1A\xD9\xB7\x13\xFD\x9D\x05\x0A\xAA\xE2\xE3\xB5\x44\xFF\x09\xA7\x2E\x86\xAE\x70\x45\xB2\xDB\xBD\xFB\x91\xD5\x64\x1C\xDD"
 def decryptBs(bs):
